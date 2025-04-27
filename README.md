@@ -9,11 +9,11 @@ LLMにはGPT-4.1-miniを利用しているため、モデル単体では先週�
 Agentは一度ユーザーに時間がかかることを伝え、Perplexity MCP Serverを呼び出し、先週のダウ平均株価を取得します。
 Agentは取得した内容をまとめ、再度Slackに投稿します。
 
-![](./img/slack-mcp-agent-slack.png)
+<img src="./img/slack-mcp-agent-slack.png" width="400">
 
 再びユーザーからメンションされたAgentは、Slack MCP Serverを呼び出し、スレッド内の過去のメッセージを把握し、Notion MCP Serverを呼び出し、Notionのデータベースに先週のダウ平均株価を記録します。
 
-![](./img/slack-mcp-agent-notion.png)
+<img src="./img/slack-mcp-agent-notion.png" width="400">
 
 ## 主な特徴
 - **Slack 連携**：`app_mention` イベントをトリガーに Agent を起動  
@@ -36,12 +36,6 @@ graph LR
     MCPServers --> SlackMCP["Slack-MCP-Server (stdio)"]
     MCPServers --> PerplexityMCP["Perplexity-Ask MCP-Server"]
     MCPServers --> NotionMCP["Notion MCP-Server"]
-    
-    style Agent fill:#f9f,stroke:#333,stroke-width:2px
-    style MCPServers fill:#bbf,stroke:#333,stroke-width:2px
-    style SlackMCP fill:#bfb,stroke:#333,stroke-width:2px
-    style PerplexityMCP fill:#bfb,stroke:#333,stroke-width:2px
-    style NotionMCP fill:#bfb,stroke:#333,stroke-width:2px
 ```
 
 - **app.py**：Slack Bolt + Socket Mode で Bot サーバーを起動  
