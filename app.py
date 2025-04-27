@@ -31,21 +31,36 @@ with open(MCP_SERVER_CONFIG_PATH, "r") as f:
 @function_tool
 async def clock() -> str:
     """Get current time in JST."""
+    print("call clock")
     t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return t
 
 @function_tool
 async def get_str_lenth(text: str) -> int:
     """Get the length of a string."""
+    print("call get_str_lenth")
     return len(text)
+
+@function_tool
+async def read_stdout() -> str:
+    print("call read_stdout")
+    with open("./log/stdout.log", "r") as f:
+        return f.readlines()
+
+@function_tool
+async def read_stderr() -> str:
+    print("call read_stderr")
+    with open("./log/stderr.log", "r") as f:
+        return f.readlines()
 
 # メンションイベントのハンドリング
 @app.event("app_mention")
 async def handle_app_mention(event, say):
     print(f"Event: {event}") 
-    async with MCPServerStdio(params=mcp_servers["slack"] , cache_tools_list=True) as slack, \
-               MCPServerStdio(params=mcp_servers["notion"], cache_tools_list=True) as notion, \
-               MCPServerStdio(params=mcp_servers["playwright"], cache_tools_list=True) as playwright:
+
+    async with MCPServerStdio(params=mcp_servers["slack"] , cache_tools_list=True, client_session_timeout_seconds=15) as slack, \
+               MCPServerStdio(params=mcp_servers["notion"], cache_tools_list=True, client_session_timeout_seconds=15) as notion, \
+               MCPServerStdio(params=mcp_servers["perplexity-ask"], cache_tools_list=True, client_session_timeout_seconds=30) as perplexity:
         instructions = agent_behavior_prompt(os.getenv("SLACK_USER_ID"))
         agent = Agent(
             name="Tachikoma Assistant",
@@ -53,11 +68,13 @@ async def handle_app_mention(event, say):
             mcp_servers=[
                 slack,
                 notion,
+                perplexity
             ],
             tools=[
                 clock,
                 get_str_lenth,
-                WebSearchTool()
+                read_stdout,
+                read_stderr,
             ],
             model="gpt-4o-mini",
         )
@@ -69,9 +86,8 @@ async def handle_app_mention(event, say):
             )
             if result.final_output:
                 print(f"Sending reply to {event['channel']} thread {event['ts']}: {result.final_output}")
-                await say(text=result.final_output, thread_ts=event["ts"])
         except Exception as e:
-                await say(text=str(e), thread_ts=event["ts"])
+                await say(text=f"[ERROR] {e}", thread_ts=event["ts"])
 
 # アプリの起動
 async def main():
