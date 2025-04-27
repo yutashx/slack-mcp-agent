@@ -39,13 +39,13 @@ graph LR
 ```
 
 - **app.py**：Slack Bolt + Socket Mode で Bot サーバーを起動  
-- **agents/**：OpenAI Agent SDK ベースの Agent 定義  
+- **agents**：OpenAI Agent SDK ベースの Agent 定義  
 - **tools.py**：`@function_tool` デコレータで関数をツール化  
 - **utils.py**：Slack イベント整形・プロンプト生成ロジック  
 - **config.json**：MCP Server 情報・環境変数を定義  
 
 ## 前提条件
-- Python 3.x 環境  
+- Python 3.13 環境  
 - Slack アプリ（Bot Token, App Token）を取得済み  
 - MCP Server（Slack, Perplexity, Notion など）が起動可能  
 - 以下のディレクトリ／ファイルを用意  
