@@ -48,7 +48,6 @@ async def handle_app_mention(event, say):
             )
             if result.final_output:
                 print(f"Sending reply to {event['channel']} thread {event['ts']}: {result.final_output}")
-                await say(text=result.final_output, thread_ts=event["ts"])
         except Exception as e:
                 await say(text=f"[ERROR] {e}", thread_ts=event["ts"])
 
