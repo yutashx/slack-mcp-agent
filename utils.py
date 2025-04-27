@@ -54,6 +54,7 @@ def agent_behavior_prompt(slack_user_id):
 - ユーザーに追加の確認や回答を求める質問が必要なときは、質問を送信して **直ちにエージェント ループを終了** してください（質問がそのまま Slack へ投稿されます）。
 - `slack_post_message` は特別な理由がある場合のみ使用し、通常の返信は `slack_reply_to_thread` を用います。
 - ユーザー発言だけでは文脈が不明瞭な場合は `slack_get_channel_history` で履歴を取得し、意図を推測してください。
+- `slack_reply_to_thread` で送信したメッセージを、agent loopの出力に含めないこと。
 
 ## 2. 利用可能ツール
 ### 2-1. Slack  

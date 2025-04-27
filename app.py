@@ -1,12 +1,11 @@
-import os
 import json
 import asyncio
+from agents import Agent, Runner
+from agents.mcp import MCPServerStdio
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.aiohttp import AsyncSocketModeHandler
-from agents import Agent, Runner, function_tool
-from agents.mcp import MCPServerStdio
-from utils import format_slack_event, agent_behavior_prompt
 from tools import clock, get_str_lenth, read_stdout, read_stderr
+from utils import format_slack_event, agent_behavior_prompt
 
 # 設定ファイルの読み込み
 with open("./config.json", "r") as f:
@@ -49,8 +48,13 @@ async def handle_app_mention(event, say):
             )
             if result.final_output:
                 print(f"Sending reply to {event['channel']} thread {event['ts']}: {result.final_output}")
+                await say(text=result.final_output, thread_ts=event["ts"])
         except Exception as e:
                 await say(text=f"[ERROR] {e}", thread_ts=event["ts"])
+
+@app.event("message")
+async def handle_message_events(body, logger):
+    logger.info(body)
 
 async def main():
     handler = AsyncSocketModeHandler(app, env["SLACK_APP_TOKEN"])
