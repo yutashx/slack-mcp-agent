@@ -1,0 +1,43 @@
+{
+    "env": {
+      "SLACK_BOT_TOKEN": "xoxb-...",
+      "SLACK_APP_TOKEN": "xapp-...",
+      "SLACK_USER_ID": "U...",
+      "OPENAI_API_KEY": "sk-...",
+      "LLM_MODEL": "gpt-4.1-mini"
+    },
+    "mcpServers": {
+        "slack": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@modelcontextprotocol/server-slack"
+          ],
+          "env": {
+            "SLACK_BOT_TOKEN": "xoxb-...",
+            "SLACK_TEAM_ID": "T...",
+            "SLACK_CHANNEL_IDS": "C..."
+          }
+        },
+        "notion": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@notionhq/notion-mcp-server"
+          ],
+          "env": {
+            "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer ntn_xxx\", \"Notion-Version\": \"2022-06-28\" }"
+          }
+        },
+        "perplexity-ask": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "server-perplexity-ask"
+          ],
+          "env": {
+            "PERPLEXITY_API_KEY": "pplx-xxx"
+          }
+        }
+      }
+  }
