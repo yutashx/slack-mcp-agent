@@ -1,5 +1,6 @@
 import json
 import asyncio
+import os
 from agents import Agent, Runner
 from agents.mcp import MCPServerStdio
 from slack_bolt.async_app import AsyncApp
@@ -48,6 +49,7 @@ async def handle_app_mention(event, say):
             )
             if result.final_output:
                 print(f"Sending reply to {event['channel']} thread {event['ts']}: {result.final_output}")
+                #await say(text=result.final_output, thread_ts=event["ts"])
         except Exception as e:
                 await say(text=f"[ERROR] {e}", thread_ts=event["ts"])
 
@@ -61,3 +63,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+    app.start(env["PORT"])
