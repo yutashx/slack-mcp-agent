@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 python:3.13-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
@@ -19,11 +19,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # アプリケーションコードのコピー
-COPY . .
-
-# ログディレクトリの作成
-RUN mkdir -p /app/log
-RUN touch /app/log/stdout.log /app/log/stderr.log
+COPY ./src .
 
 # コンテナ起動時に実行されるコマンド
 CMD ["python", "app.py"]
