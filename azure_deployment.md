@@ -70,6 +70,8 @@ az containerapp create \
   --memory 1.0Gi \
   --min-replicas 1 \
   --max-replicas 1
+  --env-vars \
+  OPENAI_API_KEY=<your_openai_api_key>
 ```
 
 ## 7. アプリケーションの動作確認
