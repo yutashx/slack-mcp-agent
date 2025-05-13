@@ -37,7 +37,7 @@ az acr login --name slackmcpacr
 cd /path/to/slack-mcp-agent
 
 # イメージのビルド
-docker build -t slackmcpacr.azurecr.io/slack-mcp-agent:latest .
+docker build -t slackmcpacr.azurecr.io/slack-mcp-agent:latest .  --platform=linux/amd64
 
 # イメージのプッシュ
 docker push slackmcpacr.azurecr.io/slack-mcp-agent:latest
@@ -54,6 +54,15 @@ az containerapp env create \
 
 ## 6. Container Appの作成とデプロイ
 
+まず、`config.json` の内容をシークレットとして登録します：
+
+```bash
+az containerapp secret set \
+  --name slack-mcp-agent \
+  --resource-group slack-mcp-agent-rg \
+  --secrets configjson=@config.json
+```
+
 アプリケーションの実行に必要な環境変数は、Azure Container Appsのシークレットとして設定します。
 
 ```bash
@@ -69,10 +78,17 @@ az containerapp create \
   --cpu 0.5 \
   --memory 1.0Gi \
   --min-replicas 1 \
-  --max-replicas 1
+  --max-replicas 1 \
+  --secrets \
+      configjson=@config.json \
+      openai-api-key=<YOUR_OPENAI_API_KEY> \
+  --secret-volume-mount /app/config \
   --env-vars \
-  OPENAI_API_KEY=<your_openai_api_key>
+      LOG_LEVEL=info \
+      OPENAI_API_KEY=secretref:openai-api-key \
+      CONFIG_PATH=/app/config/configjson
 ```
+
 
 ## 7. アプリケーションの動作確認
 
