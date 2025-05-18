@@ -23,7 +23,7 @@ RUN mkdir -p /app/log
 
 # アプリケーションコードのコピー
 COPY ./src .
-COPY ./db/app.db .
+COPY ./db/ ./db
 COPY ./mcp /app/mcp
 
 # コンテナ起動時に実行されるコマンド
