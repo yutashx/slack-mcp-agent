@@ -1,9 +1,12 @@
 .env
 .DS_Store
 config.json
+config.dev.json
 log
 .venv
 __pycache__
 *.pyc
 *.pyo
 *.pyd
+private_docs
+db

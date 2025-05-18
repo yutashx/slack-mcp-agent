@@ -9,11 +9,11 @@ LLMにはGPT-4.1-miniを利用しているため、モデル単体では先週�
 Agentは一度ユーザーに時間がかかることを伝え、Perplexity MCP Serverを呼び出し、先週のダウ平均株価を取得します。
 Agentは取得した内容をまとめ、再度Slackに投稿します。
 
-<img src="./img/slack-mcp-agent-slack.png" width="400">
+<img src="./docs/img/slack-mcp-agent-slack.png" width="400">
 
 再びユーザーからメンションされたAgentは、Slack MCP Serverを呼び出し、スレッド内の過去のメッセージを把握し、Notion MCP Serverを呼び出し、Notionのデータベースに先週のダウ平均株価を記録します。
 
-<img src="./img/slack-mcp-agent-notion.png" width="400">
+<img src="./docs/img/slack-mcp-agent-notion.png" width="400">
 
 ## 主な特徴
 - **Slack 連携**：`app_mention` イベントをトリガーに Agent を起動  
@@ -50,7 +50,6 @@ graph LR
 - MCP Server（Slack, Perplexity, Notion など）が起動可能  
 - 以下のディレクトリ／ファイルを用意  
   - `config.json`（下記例を参照）  
-  - `log/` フォルダ内に空の `stdout.log`, `stderr.log`  
 
 ## 起動方法
 ### config.jsonの作成とSlack Botのインストール
@@ -75,6 +74,7 @@ Slack Botが反応しないことがあれば、Bolt入門ガイドを丁寧に�
     - `connections:write`
 - Event Subscription -> ON
     - `message.channels`
+    - `app_mention`
 
 ## スクリプトの実行
 初期化
@@ -83,16 +83,56 @@ $ git clone https://github.com/yutashx/slack-mcp-agent
 $ cd slack-mcp-agent
 $ python3 -m venv .venv
 $ source .venv/bin/activate
-$ pip install -e requirements.txt
+$ pip install -r requirements.txt
 ```
 
 Slack BotとAgentの起動
 ```sh
-$ python3 app.py
+$ CONFIG_PATH=./config.json python3 ./src/app.py
 ```
 
-function tool `read_stdout`, `read_stderr` を利用する場合
+## DBの初期化
+SQLiteを使います
+以下のschemaを利用して、DBを初期化します
 ```sh
-$ mkdir ./log
-$ python app.py > >(tee ./log/stdout.log) 2> >(tee ./log/stderr.log >&2) # stdout, stderrをファイルに書き込みながら、ターミナルに出力する
+$ mkdir db
+$ sqlite3 db/app.db < schema.sql
+```
+
+```sql
+-- Slackの会話データを保存するテーブル
+CREATE TABLE conversation (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    thread_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    slack_channel_id TEXT NOT NULL,
+    messages TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ユーザー情報を保存するテーブル
+CREATE TABLE user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slack_user_id TEXT NOT NULL,
+    conversation_count INTEGER NOT NULL DEFAULT 0,
+    user_name TEXT NOT NULL,
+    user_email TEXT NOT NULL,
+    user_role TEXT NOT NULL,
+    user_department TEXT NOT NULL,
+    user_position TEXT NOT NULL,
+    user_birthday TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Agentが自由に利用できるメモリー
+CREATE TABLE agent_memory (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    memory_id TEXT NOT NULL,
+    memory_name TEXT NOT NULL,
+    memory_description TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 ```

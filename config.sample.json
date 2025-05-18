@@ -4,7 +4,9 @@
       "SLACK_APP_TOKEN": "xapp-...",
       "SLACK_USER_ID": "U...",
       "OPENAI_API_KEY": "sk-...",
-      "LLM_MODEL": "gpt-4.1-mini"
+      "LLM_MODEL": "gpt-4.1-mini",
+      "LLM_PROVIDER": "openai",
+      "DB_TYPE": "local"
     },
     "mcpServers": {
         "slack": {

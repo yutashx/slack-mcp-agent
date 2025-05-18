@@ -1,0 +1,15 @@
+.git
+.venv
+.v
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+.env
+*.log
+img/
+README.md
+setup.md
+tmp
