@@ -18,8 +18,13 @@ RUN node --version && npm --version && npx --version
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN mkdir -p /app/db
+RUN mkdir -p /app/log
+
 # アプリケーションコードのコピー
 COPY ./src .
+COPY ./db/app.db .
+COPY ./mcp /app/mcp
 
 # コンテナ起動時に実行されるコマンド
 CMD ["python", "app.py"]
